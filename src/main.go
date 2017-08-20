@@ -2,22 +2,35 @@ package main
 
 import (
 	"fmt"
-	"github.com/mholt/archiver"
 	"os"
+
+	"./support"
+	"github.com/mholt/archiver"
 )
 
 func main() {
 	modpath := ""
+	acpath := ""
 
 	// check if the user supplied arguments
 	if len(os.Args[1:]) > 1 {
 		// loop over the arguments to the application
-		for index,element := range os.Args[1:] {
-			if element == "-m"{
-				modpath = os.Args[index+2]
+		for index, element := range os.Args {
+			argumentValue := ""
+			if len(os.Args) > index+1 {
+				argumentValue = os.Args[index+1]
+			}
+			if element == "-m" {
+				modpath = argumentValue
+			} else if element == "-d" {
+				acpath = argumentValue
+				if support.Exist(acpath) != nil {
+					fmt.Println("The specified Assetto Corsa path does not exist")
+					os.Exit(1)
+				}
 			}
 		}
-	} else{
+	} else {
 		fmt.Println("you must specify the mod with -m /path/to/mod")
 		os.Exit(1)
 	}
@@ -36,9 +49,9 @@ func main() {
 	os.Exit(0)
 }
 
-func getAssettoCorsaPath() (string,error) {
+func getAssettoCorsaPath() (string, error) {
 	acpath := "/Program Files (x86)/Steam/steamapps/common/assettocorsa"
-	_, err  := os.Stat(acpath)
+	_, err := os.Stat(acpath)
 	if err != nil {
 		return "", err
 	}
